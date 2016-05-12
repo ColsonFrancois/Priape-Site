@@ -15,26 +15,24 @@ use Log;
 use Symfony\Component\HttpFoundation\Request;
 use backendless\Backendless;
 use backendless\model\BackendlessUser;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 
 include "D:/Logiciel/wamp/www/Priape-site/vendor/backendless/autoload.php";
+include "D:/Logiciel/wamp/www/Priape-site/vendor/httpful.phar";
 Backendless::initApp('603EA250-3BD9-5EB1-FF62-53D50AC37900', '34C1A9A1-E8C3-AFFF-FF39-5C460D6DB200', 'v1');
+
+
+
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
 
+    use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
 
     public function showWelcome()
     {
-        if(Session::has('user'))
-        {
-           Backendless::$UserService->setCurrentUser(Session::get('user'));
-        }
+
         return \view('/home');
-
-
     }
     public function contact()
     {
@@ -61,85 +59,48 @@ class Controller extends BaseController
     }
     public function authentification( Request $request)
     {
-
-
-         $param = $request;
-        $LogUser = new \App\User();
-        $user = Backendless::$UserService->login($param['email'], $param['password']);
+        $param = $request;
+        $json = '{
+        "login":"'.$param['email'].'",
+"password":"'.$param['password'].'"
+}';
+        $uri = 'https://api.backendless.com/v1/users/login';
+        $response = \Httpful\Request::post($uri)
+            ->sendsJson()
+            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+            ->addHeader('Content-Type', 'application/json')
+            ->addHeader('application-type', 'REST')
+            ->body($json)
+            ->send();
+        $tab = json_decode($response, true);
+        $user = json_decode($response);
+        $user->userToken = $tab['user-token'];
         Session::put('user', $user);
-
-            return redirect()->route('home');
-
-/*        $result = array_values($user->works);
-        $LogUser->works = $result;*/
-
-
-
-/*           $test = Backendless::$UserService->getCurrentUser();
-        $test->setName("Bob");
-        $test->setProperty('job', null);
-        $test->setPropert('works', null);
-        Backendless::$UserService->update( $test );*/
-
-
-
-
-        /*      $client = new Client('https://api.backendless.com/v1/');
-              $test = $client->post('/users/login');
-              $test->setAuth($request->email, $request->password);
-              Log::info($test->getUrl());
-
-              $response = $test->send();
-
-              Log::info($response->getBody());*/
-/*        $client = new Client();
-        $response = $client->post('https://api.backendless.com/v1/users/login', [
-            'auth' => [
-                'username',
-                'password'
-            ]
-        ])*/;
-
-
-
-/*        $client = new Client('https://api.backendless.com/v1/users/login');
-        $client->setSslVerification(FALSE);
-        $res = $client->post('', [
-        'headers' => [
-            'application-id' => '603EA250-3BD9-5EB1-FF62-53D50AC37900',
-            'secret-key' => '0E72338A-D313-ED73-FF03-E7DD53D51D00',
-            'Content-Type', 'application/json',
-            'application-type', 'REST'
-        ],
-         ],[
-                'auth' => [
-                    $request->email, $request->password,null
-                ]
-            ]
-    );
-       $result = $res->getBody();
-        Log::info($result);*/
-
-/*        $httpClient = new GuzzleClient('https://api.backendless.com/v1/users/login');
-        $httpClient->setSslVerification(FALSE);
-
-        $post_data = array(
-            $request->email, $request->password,null
+      /*  $works = array (
+            0 =>
+                (array(
+                    'created' => 1463047864000,
+                    'name' => 'tondre el pelouso',
+                    '___class' => 'Work',
+                )),
         );
-        $option_array = array(
-            'application-id' => '603EA250-3BD9-5EB1-FF62-53D50AC37900',
-            'secret-key' => '0E72338A-D313-ED73-FF03-E7DD53D51D00',
-            'Content-Type', 'application/json',
-            'application-type', 'REST'
-        );
-        $response = $httpClient->post('', $option_array, $post_data)->send();*/
+        $user->works = $works;
+        $test = json_encode($user);
 
-
-
-
-
-    }
-
+        $url = 'https://api.backendless.com/v1/users/'.$user->objectId;
+        $response = \Httpful\Request::put($url)
+            ->sendsJson()
+            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+            ->addHeader('Content-Type', 'application/json')
+            ->addHeader('application-type', 'REST')
+            ->addHeader('user-token', $user->userToken)
+            ->body($test)
+            ->send();
+        log:info($response);*/
+        return redirect()->route('home');
+        }
     public function logout()
     {
        if(Session::has('user'))
@@ -151,7 +112,7 @@ class Controller extends BaseController
     }
     public function dashboard()
     {
-        if(Session::has('user'))
+/*        if(Session::has('user'))
         {
 
 
@@ -162,27 +123,47 @@ class Controller extends BaseController
         }
         else{
         return redirect()->roue('home');
-        }
+        }*/
     }
     public function registration(Request $request)
     {
+
+
         $param = $request;
         if($param['password_confirmation'] == $param['password'])
         {
+            $params = array("address"=>$param['street'].' '.$param['number'].','.$param['zip'].' '.$param['country']);
+            $response = \Geocoder::geocode('json', $params);
+            $tab = json_decode($response, true);
+            $results = $tab['results'][0];
+            $geometry = $results['geometry'];
+            $location = $geometry['location'];
             $geopoint = new \App\GeoPoint();
 
-            $geopoint->latitude = 50.484444;
-            $geopoint->longitude = 4.254995;
+            $geopoint->latitude = $location['lat'];
+            $geopoint->longitude = $location['lng'];
             $geopoint->___class = 'GeoPoint';
 
-            $user = new BackendlessUser();
-            $user->setEmail($param['email']);
-            $user->setPassword($param['password']);
-            $user->setName($param['name']);
-            $user->setProperty('professional', true);
-            $user->setProperty('location', $geopoint);
+            $user = new \App\User();
+            $user->name = $param['name'];
+            $user->password = $param['password'];
+            $user->email = $param['email'];
+            $user->professional = true;
+            $user->description = $param['description'];
+            $user->job = $param['job'];
+            $user->location = $geopoint;
+            $json = json_encode($user);
+            $uri = 'https://api.backendless.com/v1/users/register';
+            $response = \Httpful\Request::post($uri)
+                ->sendsJson()
+                ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+                ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+                ->addHeader('Content-Type', 'application/json')
+                ->addHeader('application-type', 'REST')
+                ->body($json)
+                ->send();
 
-            $user = Backendless::$UserService->register($user);
+            log:info($response);
         }
         return redirect()->route('home');
     }
