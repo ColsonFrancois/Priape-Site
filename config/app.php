@@ -148,7 +148,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         'Alexpechkarev\GoogleGeocoder\GoogleGeocoderServiceProvider',
-
         /*
          * Application Service Providers...
          */

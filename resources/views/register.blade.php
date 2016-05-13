@@ -1,5 +1,12 @@
 @extends('../template')
 @section('contenu')
+
+
+    @if( !empty($error))
+
+        @endif
+
+
     <section class="module-sm">
         <div class="container-fluid container-custom">
 
@@ -20,24 +27,14 @@
 
             <form role="form" method="post" action="{{route('registration')}}" >
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <h6 for="InputMessage">Information sur l'entreprise</h6>
                     <div class="form-group">
                         <div class="input-group">
                             <input type="text" class="form-control" name="name" placeholder="Nom de l'entreprise" value="{{ old('name') }}" required >
                             <span class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="form-group">
-                            <select class="form-control" id="exampleSelect1" name="job">
-                                <option>Macon</option>
-                                <option>Jardinier</option>
-                                <option>plafonneur</option>
-                                <option>Electricien</option>
-                                <option>Menuisier</option>
-                                <option>Carreleur</option>
-                            </select>
-                        </div>
-                    </div>
+
                     <div class="form-group">
                         <div class="input-group">
                             <input type="text" class="form-control" name="email" placeholder="Votre Email" value="{{ old('email') }}" required>
@@ -56,10 +53,27 @@
                             <span class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></span>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <div class="input-group">
-                                    <textarea name="description" id="description" placeholder="Description de votre entreprise"
+                            <input type="number" class="form-control" name="phone"  placeholder="Numero de telephone" required>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-group">
+                            <select class="form-control" id="exampleSelect1" name="job">
+                                <option>Macon</option>
+                                <option>Jardinier</option>
+                                <option>plafonneur</option>
+                                <option>Electricien</option>
+                                <option>Menuisier</option>
+                                <option>Carreleur</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                                    <textarea name="description"  id="description" placeholder="Description de votre entreprise"
                                               class="form-control" rows="10"
                                               required></textarea>
                                     <span class="input-group-addon"><span
@@ -83,7 +97,7 @@
                     </div>
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="number" placeholder="Numero (Exemple: 44)" required >
+                            <input type="number" class="form-control" name="number" placeholder="Numero (Exemple: 44)" required >
                             <span class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></span>
                         </div>
                     </div>

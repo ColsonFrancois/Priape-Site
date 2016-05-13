@@ -1,9 +1,9 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -22,6 +22,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/toastr.css" rel="stylesheet"/>
 
     <!-- Icon Fonts -->
     <link href="assets/css/font-awesome.min.css" rel="stylesheet">
@@ -78,6 +79,7 @@
                         <a class="dropdown-toggle" data-toggle="dropdown">{{ Session::get('user')->name }}</a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="{{ route('dashboard') }}">Controle panel</a></li>
+                            <li><a href="{{ route('profil') }}">Mon profil</a></li>
                             <li><a  href="{{ route('logout') }}">Deconnexion</a></li>
                         </ul>
                     </li>
@@ -121,24 +123,30 @@
     <hr class="divider">
 
 
-<!-- FOOTER -->
 
-<footer>
-    <div class="navbar navbar-fixed-bottom">
+    <!-- FOOTER -->
 
+    <footer class="footer module-overlay-dark-3">
+        <div class="container-fluid container-custom">
 
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="copyright text-center font-alt">
-                    Webdesigner : Colson Francois.
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="copyright text-center font-alt">
+                        WebMaster & WebDesigner : <a href="https://www.facebook.com/francois.colson"> Fran&ccedil;ois Colson</a>.
+                    </div>
                 </div>
             </div>
+
+            <!-- SCROLLTOP -->
+            <a class="to-top-link" href="#top">
+                <i class="fa fa-angle-up"></i>
+            </a>
+
         </div>
+    </footer>
 
-    </div>
-</footer>
+    <!-- /FOOTER -->
 
-<!-- /FOOTER -->
 
 </div>
 <!-- /WRAPPER -->
@@ -159,6 +167,8 @@
 <script src="assets/js/smoothscroll.js"></script>
 <script src="assets/js/submenu-fix.js"></script>
 <script src="assets/js/custom.js"></script>
+    <script src="assets/js/toastr.js"></script>
+
 
 </body>
 

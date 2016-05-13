@@ -1,6 +1,6 @@
 @extends('../template')
 @section('contenu')
-    <section class="module">
+{{--    <section class="module">
         <div class="container">
         @foreach($works as $work)
             <p>{{$work['name']}}</p>
@@ -8,5 +8,8 @@
 
 
     </div>
-    </section>
+    </section>--}}
+
+
+
     @endsection

@@ -38,3 +38,6 @@ Route::get('/contact', ['as' => 'contact',
 
 Route::get('/dashboard', ['as' => 'dashboard',
  'uses'=> 'Controller@dashboard']);
+
+Route::get('/profil', ['as' => 'profil',
+ 'uses'=>'Controller@profil']);

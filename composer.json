@@ -8,7 +8,8 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "alexpechkarev/google-geocoder": "dev-master",
-        
+        "kamaln7/toastr": "dev-master"
+
 
     },
     "require-dev": {

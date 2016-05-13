@@ -1,11 +1,29 @@
 @extends('../template')
 @section('contenu')
+
+
+
+    @if(Session::has('user'))
+        @if(empty(Session::get('user')->works))
+        <script src="assets/js/jquery-2.1.4.min.js"></script>
+        <link href="assets/css/toastr.css" rel="stylesheet"/>
+        <script src="assets/js/toastr.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                toastr.options.timeOut = 10000;
+                toastr.warning('Votre entreprise n\'est pas visible. Rendez-vous dans votre profil pour modifier vos travaux');
+                $('#linkButton').click(function() {
+                    toastr.success('Click Button');
+                });
+            });
+        </script>
+        @endif
+@endif
+
         <!-- WRAPPER -->
 <div class="wrapper">
-
     <!-- HERO -->
     <section id="hero" class="module-hero bg-dark-30 js-fullheight" data-background="assets/images/background.jpg">
-
         <!-- HERO TEXT -->
         <div class="hero-caption">
             <div class="hero-text">
@@ -20,165 +38,96 @@
     </section>
     <!-- /HERO -->
 
-    <!-- PORTFOLIO -->
-    <section id="portfolio" class="module-sm">
-        <div class="container-fluid">
+    <!-- SERVICES -->
+    <section id="portfolio" class="module">
+        <div class="container-fluid container-custom">
 
-            <!-- FILTERS -->
+            <!-- MODULE TITLE -->
             <div class="row">
-                <div class="col-sm-12">
-                    <ul id="filters" class="filters font-alt">
-                        <li><a href="#" class="current" data-filter="*">All</a></li>
-                        <li><a href="#" data-filter=".fashion">Fashion</a></li>
-                        <li><a href="#" data-filter=".travel">Travel</a></li>
-                        <li><a href="#" data-filter=".music">Music</a></li>
-                        <li><a href="#" data-filter=".video">Video</a></li>
-                    </ul>
+                <div class="col-sm-6 col-sm-offset-3">
+                    <h2 class="module-title font-alt">Nos services</h2>
+                    <p class="module-subtitle">Priape est plus qu'une simple application.</p>
                 </div>
             </div>
-            <!-- /FILTERS -->
-
-            <div class="works-grid-wrapper">
-
-                <div id="works-grid" class="works-grid works-grid-gutter">
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item travel video">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/background.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">Montures</h3>
-                                <span class="work-category font-serif"><a href="#">Travel, Video</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item fashion">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/portfolio-8.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">Rambler & Co</h3>
-                                <span class="work-category font-serif"><a href="#">Fashion</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item music">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/portfolio-2.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">Pink Lips</h3>
-                                <span class="work-category font-serif"><a href="#">Music</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item fashion">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/portfolio-3.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">Brother</h3>
-                                <span class="work-category font-serif"><a href="#">Fashion</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item travel">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/portfolio-4.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">Travel Bags</h3>
-                                <span class="work-category font-serif"><a href="#">Travel</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item music">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/portfolio-5.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">Workshop</h3>
-                                <span class="work-category font-serif"><a href="#">Music</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item travel">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/portfolio-6.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">The Handkerchief</h3>
-                                <span class="work-category font-serif"><a href="#">Travel</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                    <!-- PORTFOLIO ITEM -->
-                    <article class="work-item fashion">
-                        <div class="work-wrapper">
-                            <div class="work-thumbnail">
-                                <img src="assets/images/portfolio-7.jpg" alt="">
-                            </div>
-                            <div class="work-caption">
-                                <h3 class="work-title font-alt">Architecture</h3>
-                                <span class="work-category font-serif"><a href="#">Fashion</a></span>
-                            </div>
-                            <a href="portfolio-single-1.html" class="work-link"></a>
-                        </div>
-                    </article>
-                    <!-- /PORTFOLIO ITEM -->
-
-                </div>
-
-            </div><!-- works-grid-wrapper -->
-
-            <!-- SHOW MORE -->
+            <!-- /MODULE TITLE -->
+{{--
             <div class="row">
                 <div class="col-sm-12">
-
-                    <div class="m-t-70 text-center">
-                        <button id="show-more" class="btn btn-dark show-more">More works</button>
+                    <div class="text-center m-b-60">
+                        <img src="assets/images/notebooks.jpg" alt="">
                     </div>
-
                 </div>
+            </div>--}}
+
+            <div class="row multi-columns-row">
+
+                <!-- ICONBOX -->
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="iconbox">
+                        <div class="iconbox-icon">
+                            <span class="icon-mobile"></span>
+                        </div>
+                        <div class="iconbox-header">
+                            <h4 class="iconbox-title font-alt">Application android</h4>
+                        </div>
+                        <div class="iconbox-content">
+                            <p>Priape est une application a la pointe de la technologie, utilisant les dernires fonctionnalitees stylistique.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /ICONBOX -->
+
+                <!-- ICONBOX -->
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="iconbox">
+                        <div class="iconbox-icon">
+                            <span class="icon-linegraph"></span>
+                        </div>
+                        <div class="iconbox-header">
+                            <h4 class="iconbox-title font-alt">Visibilite de votre entreprise</h4>
+                        </div>
+                        <div class="iconbox-content">
+                            <p>Grace a priape, vous serez visibile au yeux des utilisateur. En un clique, ils pourront acceder a votre profil.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /ICONBOX -->
+
+                <!-- ICONBOX -->
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="iconbox">
+                        <div class="iconbox-icon">
+                            <span class="icon-strategy"></span>
+                        </div>
+                        <div class="iconbox-header">
+                            <h4 class="iconbox-title font-alt">Gestion</h4>
+                        </div>
+                        <div class="iconbox-content">
+                            <p>Grace a un control panel, contruisez-vous un planning et consultez les commentaires laissez pas les utilisateurs.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /ICONBOX -->
+
+{{--                <!-- ICONBOX -->
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <div class="iconbox">
+                        <div class="iconbox-icon">
+                            <span class="icon-layers"></span>
+                        </div>
+                        <div class="iconbox-header">
+                            <h4 class="iconbox-title font-alt">Modular Layout</h4>
+                        </div>
+                        <div class="iconbox-content">
+                            <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /ICONBOX -->--}}
+
             </div>
-            <!-- /SHOW MORE -->
 
         </div>
     </section>
-    <!-- /PORTFOLIO -->
-    @endsection
+    <!-- /SERVICES -->
+@endsection

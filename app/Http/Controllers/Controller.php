@@ -77,7 +77,7 @@ class Controller extends BaseController
         $user = json_decode($response);
         $user->userToken = $tab['user-token'];
         Session::put('user', $user);
-      /*  $works = array (
+/*       $works = array (
             0 =>
                 (array(
                     'created' => 1463047864000,
@@ -86,9 +86,11 @@ class Controller extends BaseController
                 )),
         );
         $user->works = $works;
+        $user->email = 'champ@champ.be';
+        $user->objectId = 'CD2984EC-F571-54EB-FF0A-D2333BEA4500';
         $test = json_encode($user);
 
-        $url = 'https://api.backendless.com/v1/users/'.$user->objectId;
+        $url = 'https://api.backendless.com/v1/users/CD2984EC-F571-54EB-FF0A-D2333BEA4500';
         $response = \Httpful\Request::put($url)
             ->sendsJson()
             ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
@@ -105,6 +107,14 @@ class Controller extends BaseController
     {
        if(Session::has('user'))
        {
+           $url = 'https://api.backendless.com/v1/users/logout';
+           $response = \Httpful\Request::put($url)
+               ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+               ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+               ->addHeader('application-type', 'REST')
+               ->addHeader('user-token', Session::get('user')->userToken)
+               ->send();
+           log:info($response);
            Session::forget('user');
        }
         return redirect()->route('home');
@@ -124,10 +134,10 @@ class Controller extends BaseController
         else{
         return redirect()->roue('home');
         }*/
+        return \view('/dashboard');
     }
     public function registration(Request $request)
     {
-
 
         $param = $request;
         if($param['password_confirmation'] == $param['password'])
@@ -135,11 +145,13 @@ class Controller extends BaseController
             $params = array("address"=>$param['street'].' '.$param['number'].','.$param['zip'].' '.$param['country']);
             $response = \Geocoder::geocode('json', $params);
             $tab = json_decode($response, true);
-            $results = $tab['results'][0];
+
+            if(($tab['status'] != 'ZERO_RESULTS'))
+            {   log:info($tab);
+           $results = $tab['results'][0];
             $geometry = $results['geometry'];
             $location = $geometry['location'];
             $geopoint = new \App\GeoPoint();
-
             $geopoint->latitude = $location['lat'];
             $geopoint->longitude = $location['lng'];
             $geopoint->___class = 'GeoPoint';
@@ -150,6 +162,7 @@ class Controller extends BaseController
             $user->email = $param['email'];
             $user->professional = true;
             $user->description = $param['description'];
+                $user->phone = $param['phone'];
             $user->job = $param['job'];
             $user->location = $geopoint;
             $json = json_encode($user);
@@ -162,10 +175,41 @@ class Controller extends BaseController
                 ->addHeader('application-type', 'REST')
                 ->body($json)
                 ->send();
-
-            log:info($response);
+                return redirect()->route('home');
         }
-        return redirect()->route('home');
+        else{
+            echo "
+            <script src='assets/js/jquery-2.1.4.min.js'></script>
+        <link href='assets/css/toastr.css' rel='stylesheet'/>
+        <script src='assets/js/toastr.js'></script>
+        <script type='text/javascript'>
+                $(document).ready(function(){
+                    toastr.options.timeOut = 10000;
+                    toastr.error('mauvaise adresse.');
+                $('#linkButton').click(function() {
+                    toastr.success('Click Button');
+                });
+            });
+        </script>";
+        }
+        }
+    }
+    public function profil()
+    {
+        $geopoint = json_encode(Session::get('user')->location);
+        $tab[] = json_decode($geopoint, true);
+        $param = array("latlng" => $tab[0]['latitude'].",".$tab[0]['longitude']);
+        $response = \Geocoder::geocode('json', $param);
+        $tableau = json_decode($response, true);
+        log:info($tableau);
+
+
+
+        return \view('/profil', array(
+            'street' => $tableau['results'][0]['address_components'][1]['long_name'],
+            'number' => $tableau['results'][0]['address_components'][0]['long_name'],
+            'zip' => $tableau['results'][0]['address_components'][6]['long_name'],
+        ));
     }
 
 }
