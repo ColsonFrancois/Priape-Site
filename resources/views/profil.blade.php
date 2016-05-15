@@ -16,7 +16,7 @@
             <div class="container">
                 <div class="row">
 
-                    <form role="form" method="post" action="{{route('registration')}}" >
+                    <form role="form" method="post" action="{{route('editing')}}" >
                         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                             <h6 for="InputMessage">Information sur l'entreprise</h6>
                             <div class="form-group">
@@ -32,7 +32,7 @@
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></span>
                                 </div>
                             </div>
-                            <div class="form-group">
+<!--                            <div class="form-group">
                                 <div class="form-group">
                                     <select class="form-control" id="exampleSelect1" name="job">
                                         <option <?php if(Session::get('user')->job == "Macon")  echo "selected='selected'";?>>Macon</option>
@@ -43,7 +43,7 @@
                                         <option <?php if(Session::get('user')->job == "Carreleur")  echo "selected='selected'";?>>Carreleur</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="form-group">
                                 <div class="input-group">
                                     <textarea name="description" id="description" placeholder="Description de votre entreprise"
@@ -81,10 +81,13 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <h6 for="InputMessage">Les travaux que vous realisez</h6>
                                 <div class="input-group">
+                                    @foreach($works as $work)
                                     <div class="checkbox">
-                                        <label><input type="checkbox" value="">Option 1</label>
+                                        <label><input type="checkbox" name="work[]" <?php if(array_key_exists('checked', $work))if($work['checked'] == true)  echo "checked";?> value="{{$work['objectId']}}|{{$work['name']}} ">{{$work['name']}}</label>
                                     </div>
+                                        @endforeach
                                 </div>
                             </div>
                             <input type="hidden" name="_token" value="{!! csrf_token() !!}"> <!-- Token pour sécurisé l'envoie des information -->

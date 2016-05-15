@@ -41,3 +41,7 @@ Route::get('/dashboard', ['as' => 'dashboard',
 
 Route::get('/profil', ['as' => 'profil',
  'uses'=>'Controller@profil']);
+
+Route::post('/editing', ['as'=>'editing',
+'uses'=>'Controller@editing'
+]);

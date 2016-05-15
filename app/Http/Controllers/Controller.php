@@ -196,20 +196,104 @@ class Controller extends BaseController
     }
     public function profil()
     {
+        /*Convert geopoint to adress*/
         $geopoint = json_encode(Session::get('user')->location);
         $tab[] = json_decode($geopoint, true);
         $param = array("latlng" => $tab[0]['latitude'].",".$tab[0]['longitude']);
         $response = \Geocoder::geocode('json', $param);
         $tableau = json_decode($response, true);
-        log:info($tableau);
 
+        /*Get all works do by his job*/
+        $whereClause = "job='".Session::get('user')->job."'";
+        $url = 'https://api.backendless.com/v1/data/Work?where='.$whereClause;
+        $response = \Httpful\Request::get($url)
+            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+            ->addHeader('application-type', 'REST')
+            ->addHeader('Content-Type', 'application/json')
+            ->addHeader('user-token', Session::get('user')->userToken)
+            ->send();
+        $workTab = json_decode($response, true);
 
+        $count = count($workTab['data']);
+        if(count(Session::get('user')->works) > 0){
+        foreach(Session::get('user')->works as $work)
+        {
+            for($i = 0; $i < $count; $i++){
+                if($work->name === $workTab['data'][$i]['name'])
+                {
+
+                    $workTab['data'][$i]['checked'] = true;
+
+                }
+                else{
+                    $workTab['data'][$i]['checked'] = false;
+
+                }
+                log:info($workTab['data'][$i]['name'].' : '.$workTab['data'][$i]['checked']);
+            }
+        }
+        }
 
         return \view('/profil', array(
             'street' => $tableau['results'][0]['address_components'][1]['long_name'],
             'number' => $tableau['results'][0]['address_components'][0]['long_name'],
             'zip' => $tableau['results'][0]['address_components'][6]['long_name'],
+            'works' => $workTab['data']
         ));
+    }
+    public function editing(Request $request)
+    {
+        $param = $request;
+        $resultworks=array();
+        foreach($param['work'] as $works=>$value)
+        {
+            list($value1,$value2) = explode('|', $value);
+            $element =
+                    array(
+                        'objectId'=>$value1,
+                        'job' => Session::get('user')->job,
+                        'name' => $value2,
+                        '___class' => 'Work',);
+
+            array_push($resultworks, $element);
+        }
+        Session::get('user')->name = $param['name'];
+        Session::get('user')->works = $resultworks;
+        Session::get('user')->phone = $param['phone'];
+        Session::get('user')->description = $param['description'];
+        $params = array("address"=>$param['street'].' '.$param['number'].','.$param['zip'].' '.$param['country']);
+        $response = \Geocoder::geocode('json', $params);
+        $tab = json_decode($response, true);
+
+        if(($tab['status'] != 'ZERO_RESULTS')) {
+            $results = $tab['results'][0];
+            $geometry = $results['geometry'];
+            $location = $geometry['location'];
+            $geopoint = new \App\GeoPoint();
+            $geopoint->latitude = $location['lat'];
+            $geopoint->longitude = $location['lng'];
+            $geopoint->___class = 'GeoPoint';
+            Session::get('user')->location = $geopoint;
+        }
+
+        $test = json_encode(Session::get('user'));
+        $url = 'https://api.backendless.com/v1/users/'.Session::get('user')->objectId;
+        $response = \Httpful\Request::put($url)
+            ->sendsJson()
+            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+            ->addHeader('Content-Type', 'application/json')
+            ->addHeader('application-type', 'REST')
+            ->addHeader('user-token', Session::get('user')->userToken)
+            ->body($test)
+            ->send();
+        log:info($response);
+        $user = json_decode($response);
+        $user->userToken = Session::get('user')->userToken;
+        Session::forget('user');
+        Session::put('user', $user);
+        return redirect()->route('home');
     }
 
 }

@@ -76,7 +76,11 @@
 
                 @if(Session::has('user'))
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown">{{ Session::get('user')->name }}</a>
+                        <a class="dropdown-toggle" data-toggle="dropdown">@if(strlen(Session::get('user')->name)> 20)
+                                {{substr(Session::get('user')->name,0,-(strlen(Session::get('user')->name)-20))."..."}}
+                             @else
+                                {{ Session::get('user')->name }}
+                            @endif</a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="{{ route('dashboard') }}">Controle panel</a></li>
                             <li><a href="{{ route('profil') }}">Mon profil</a></li>
