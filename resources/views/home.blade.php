@@ -4,7 +4,7 @@
 
 
     @if(Session::has('user'))
-        @if(empty(Session::get('user')->works))
+        @if(empty(Session::get('user')->getWorks()))
         <script src="assets/js/jquery-2.1.4.min.js"></script>
         <link href="assets/css/toastr.css" rel="stylesheet"/>
         <script src="assets/js/toastr.js"></script>

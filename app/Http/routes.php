@@ -45,3 +45,7 @@ Route::get('/profil', ['as' => 'profil',
 Route::post('/editing', ['as'=>'editing',
 'uses'=>'Controller@editing'
 ]);
+
+Route::get('/calendar', ['as' =>'calendar',
+    'uses'=>'Controller@calendar'
+]);

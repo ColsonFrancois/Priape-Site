@@ -35,6 +35,10 @@
 
     <!-- Template core CSS -->
     <link href="assets/css/template.css" rel="stylesheet">
+    <link href="assets/css/calendrier.css" rel="stylesheet">
+
+
+
 </head>
 <body>
 
@@ -76,14 +80,15 @@
 
                 @if(Session::has('user'))
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown">@if(strlen(Session::get('user')->name)> 20)
-                                {{substr(Session::get('user')->name,0,-(strlen(Session::get('user')->name)-20))."..."}}
+                        <a class="dropdown-toggle" data-toggle="dropdown">@if(strlen(Session::get('user')->getName())> 20)
+                                {{substr(Session::get('user')->getName(),0,-(strlen(Session::get('user')->getName())-20))."..."}}
                              @else
-                                {{ Session::get('user')->name }}
+                                {{ Session::get('user')->getName() }}
                             @endif</a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="{{ route('dashboard') }}">Controle panel</a></li>
                             <li><a href="{{ route('profil') }}">Mon profil</a></li>
+                            <li><a href="{{ route('calendar') }}">Calendrier</a></li>
                             <li><a  href="{{ route('logout') }}">Deconnexion</a></li>
                         </ul>
                     </li>
@@ -122,8 +127,8 @@
 </div>
 <!-- /SIDEBAR -->
 
+    <body>@yield('contenu')</body>
 
-@yield('contenu')
     <hr class="divider">
 
 
@@ -172,6 +177,7 @@
 <script src="assets/js/submenu-fix.js"></script>
 <script src="assets/js/custom.js"></script>
     <script src="assets/js/toastr.js"></script>
+
 
 
 </body>

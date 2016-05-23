@@ -21,26 +21,26 @@
                             <h6 for="InputMessage">Information sur l'entreprise</h6>
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" name="name" placeholder="Nom de l'entreprise" value="{{ Session::get('user')->name }}" required >
+                                    <input type="text" class="form-control" name="name" placeholder="Nom de l'entreprise" value="{{ Session::get('user')->getName() }}" required >
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></span>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="number" class="form-control" name="phone" value="{{Session::get('user')->phone}}" placeholder="Numero de telephone" required>
+                                    <input type="number" class="form-control" name="phone" value="{{Session::get('user')->getPhone()}}" placeholder="Numero de telephone" required>
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></span>
                                 </div>
                             </div>
 <!--                            <div class="form-group">
                                 <div class="form-group">
                                     <select class="form-control" id="exampleSelect1" name="job">
-                                        <option <?php if(Session::get('user')->job == "Macon")  echo "selected='selected'";?>>Macon</option>
-                                        <option <?php if(Session::get('user')->job == "Jardinier")  echo "selected='selected'";?>>Jardinier</option>
-                                        <option <?php if(Session::get('user')->job == "Plafonneur")  echo "selected='selected'";?>>Plafonneur</option>
-                                        <option <?php if(Session::get('user')->job == "Electricien")  echo "selected='selected'";?>>Electricien</option>
-                                        <option <?php if(Session::get('user')->job == "Menuisier")  echo "selected='selected'";?>>Menuisier</option>
-                                        <option <?php if(Session::get('user')->job == "Carreleur")  echo "selected='selected'";?>>Carreleur</option>
+                                        <option <?php if(Session::get('user')->getJob() == "Macon")  echo "selected='selected'";?>>Macon</option>
+                                        <option <?php if(Session::get('user')->getJob() == "Jardinier")  echo "selected='selected'";?>>Jardinier</option>
+                                        <option <?php if(Session::get('user')->getJob() == "Plafonneur")  echo "selected='selected'";?>>Plafonneur</option>
+                                        <option <?php if(Session::get('user')->getJob() == "Electricien")  echo "selected='selected'";?>>Electricien</option>
+                                        <option <?php if(Session::get('user')->getJob() == "Menuisier")  echo "selected='selected'";?>>Menuisier</option>
+                                        <option <?php if(Session::get('user')->getJob() == "Carreleur")  echo "selected='selected'";?>>Carreleur</option>
                                     </select>
                                 </div>
                             </div>-->
@@ -48,7 +48,7 @@
                                 <div class="input-group">
                                     <textarea name="description" id="description" placeholder="Description de votre entreprise"
                                               class="form-control" rows="10"
-                                              required>{{Session::get('user')->description}}</textarea>
+                                              required>{{Session::get('user')->getDescription()}}</textarea>
                                     <span class="input-group-addon"><span
                                                 class="glyphicon glyphicon-asterisk"></span></span>
                                 </div>

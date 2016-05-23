@@ -25,7 +25,7 @@
     <section class="module">
         <div class="container">
 
-            <form role="form" method="post" action="{{route('registration')}}" >
+            <form role="form" method="post" action="{{route('registration')}}" enctype="multipart/form-data" >
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <h6 for="InputMessage">Information sur l'entreprise</h6>
                     <div class="form-group">
@@ -78,6 +78,11 @@
                                               required></textarea>
                                     <span class="input-group-addon"><span
                                                 class="glyphicon glyphicon-asterisk"></span></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="file" name="image" id="image" placeholder="choissisez une photo">
                         </div>
                     </div>
                     <div class="form-group">
