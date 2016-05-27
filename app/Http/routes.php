@@ -49,3 +49,12 @@ Route::post('/editing', ['as'=>'editing',
 Route::get('/calendar', ['as' =>'calendar',
     'uses'=>'Controller@calendar'
 ]);
+
+Route::post('/adding', ['as' => 'adding',
+    'uses' => 'Controller@adding'
+]);
+
+Route::get('/delete/{objectId}', [
+    'as' => 'deleleteEvent',
+    'uses' => 'Controller@delete'
+]);

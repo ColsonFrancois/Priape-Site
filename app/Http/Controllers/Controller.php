@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+
+
+use App\Api;
 use App\User;
+use App\Event;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -17,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use backendless\Backendless;
 use backendless\model\BackendlessUser;
 use Illuminate\Support\Facades\Auth;
+
 
 include "D:/Logiciel/wamp/www/Priape-site/vendor/backendless/autoload.php";
 include "D:/Logiciel/wamp/www/Priape-site/vendor/httpful.phar";
@@ -33,6 +38,9 @@ class Controller extends BaseController
     public function showWelcome()
     {
 
+        if(Session::has('user')){
+            return redirect()->route('dashboard');
+        }
         return \view('/home');
     }
     public function contact()
@@ -43,10 +51,10 @@ class Controller extends BaseController
     }
     public function register()
     {
-        if(Session::has('user'))
+/*        if(Session::has('user'))
         {
             return redirect()->route('home');
-        }
+        }*/
         return \view('/register');
     }
 
@@ -61,67 +69,23 @@ class Controller extends BaseController
     public function authentification( Request $request)
     {
         $param = $request;
-        $json = '{
-        "login":"'.$param['email'].'",
-"password":"'.$param['password'].'"
-}';
-        $uri = 'https://api.backendless.com/v1/users/login';
-        $response = \Httpful\Request::post($uri)
-            ->sendsJson()
-            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-            ->addHeader('Content-Type', 'application/json')
-            ->addHeader('application-type', 'REST')
-            ->body($json)
-            ->send();
-       $tab = json_decode($response, true);
-
-
-
- /*Get all works do by his job*/
-      /*  $whereClause = "job='".Session::get('user')->getJob()."'";
-        $url = 'https://api.backendless.com/v1/data/Work?where='.$whereClause;
-        $response = \Httpful\Request::get($url)
-            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-            ->addHeader('application-type', 'REST')
-            ->addHeader('Content-Type', 'application/json')
-            ->addHeader('user-token', Session::get('user')->getUserToken())
-            ->send();
-        $workTab = json_decode($response, true);*/
-        $whereClause = "objectId='".$tab['objectId']."'";
-        $link = 'https://api.backendless.com/v1/data/users?where='.$whereClause;
-        $res = \Httpful\Request::get($link)
-            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-            ->addHeader('application-type', 'REST')
-            ->addHeader('Content-Type', 'application/json')
-            ->addHeader('user-token', $tab['user-token'])
-            ->send();
-
-        $array = json_decode($res, true);
-        log:info($array);
-
+        $tab =  Api::login($param['email'], $param['password']);
+        $array = Api::getUser($tab['objectId'], $tab['user-token']);
         $user = new User();
         $user->jsonDesializable($array['data'][0]);
         $user->setUserToken($tab['user-token']);
         Session::put('user', $user);
-
-
-        return redirect()->route('home');
+        if($user->getProfessional() == false)
+        {
+            return redirect()->route('logout');
+        }
+        else{return redirect()->route('dashboard');}
         }
     public function logout()
     {
        if(Session::has('user'))
        {
-           $url = 'https://api.backendless.com/v1/users/logout';
-           $response = \Httpful\Request::put($url)
-               ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-               ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-               ->addHeader('application-type', 'REST')
-               ->addHeader('user-token', Session::get('user')->userToken)
-               ->send();
-           log:info($response);
+           Api::logout(Session::get('user')->getUserToken());
            Session::forget('user');
        }
         return redirect()->route('home');
@@ -129,19 +93,8 @@ class Controller extends BaseController
     }
     public function dashboard()
     {
-/*        if(Session::has('user'))
-        {
-
-
-            $works = Session::get('user')->works;
-
-            return \view('/dashboard', array(
-           'works' =>  $works));
-        }
-        else{
-        return redirect()->roue('home');
-        }*/
-        return \view('/dashboard');
+       $array= Api::getWeather(Session::get('user')->getLocation()['latitude'],Session::get('user')->getLocation()['longitude']);
+        return \view('/dashboard', array('weather' => $array));
     }
     public function registration(Request $request)
     {
@@ -149,17 +102,7 @@ class Controller extends BaseController
         $param = $request;
         if($param['password_confirmation'] == $param['password']) {
             if (!is_null($param['image'])) {
-                $uri = 'https://api.backendless.com/v1/files/images/'.$param['name'].$param['email'].'.jpg';
-                $response = \Httpful\Request::post($uri)
-                    ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-                    ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-                    ->addHeader('Content-Type', 'application/json')
-                    ->addHeader('application-type', 'REST')
-                    ->attach($param['image'])
-                    ->send();
-                $tableau = json_decode($response, true);
-                $picture = $tableau['fileURL'];
-
+               $picture  = Api::uploadImage(Session::get('user')->getName(),Session::get('user')->getEmail(), Session::get('user')->getToken(), $param['image']);
             } else {
                 $picture = null;
             }
@@ -188,76 +131,11 @@ class Controller extends BaseController
                 $user->setLocation($geopoint);
                 $param['location'] = $geopoint;
                 if($picture !=null){$user->setPicture($picture);}
+
                 $json = $user->jsonToRegister();
-
-                $uri = 'https://api.backendless.com/v1/users/register';
-                $response = \Httpful\Request::post($uri)
-                    ->sendsJson()
-                    ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-                    ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-                    ->addHeader('Content-Type', 'application/json')
-                    ->addHeader('application-type', 'REST')
-                    ->body($json)
-                    ->send();
-                log:info($response);
-                return redirect()->route('home');
+                Api::register($json);
+                return redirect()->route('home', array("error" => "null"));
         }}
-
-        else{
-            echo "
-            <script src='assets/js/jquery-2.1.4.min.js'></script>
-        <link href='assets/css/toastr.css' rel='stylesheet'/>
-        <script src='assets/js/toastr.js'></script>
-        <script type='text/javascript'>
-                $(document).ready(function(){
-                    toastr.options.timeOut = 10000;
-                    toastr.error('mauvaise adresse.');
-                $('#linkButton').click(function() {
-                    toastr.success('Click Button');
-                });
-            });
-        </script>";
-        }
-
-/*
-
-            $params = array("address"=>$param['street'].' '.$param['number'].','.$param['zip'].' '.$param['country']);
-            $response = \Geocoder::geocode('json', $params);
-            $tab = json_decode($response, true);
-
-            if(($tab['status'] != 'ZERO_RESULTS'))
-            {   log:info($tab);
-           $results = $tab['results'][0];
-            $geometry = $results['geometry'];
-            $location = $geometry['location'];
-            $geopoint = new \App\GeoPoint();
-            $geopoint->latitude = $location['lat'];
-            $geopoint->longitude = $location['lng'];
-            $geopoint->___class = 'GeoPoint';
-
-            $user = new \App\User();
-            $user->name = $param['name'];
-            $user->password = $param['password'];
-            $user->email = $param['email'];
-            $user->professional = true;
-            $user->description = $param['description'];
-                $user->phone = $param['phone'];
-            $user->job = $param['job'];
-            $user->location = $geopoint;
-            $json = json_encode($user);
-            $uri = 'https://api.backendless.com/v1/users/register';
-            $response = \Httpful\Request::post($uri)
-                ->sendsJson()
-                ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-                ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-                ->addHeader('Content-Type', 'application/json')
-                ->addHeader('application-type', 'REST')
-                ->body($json)
-                ->send();
-                return redirect()->route('home');
-        }
-
-       */
     }
     public function profil()
     {
@@ -270,17 +148,7 @@ class Controller extends BaseController
         log:info($tableau);
 
         /*Get all works do by his job*/
-        $whereClause = "job='".Session::get('user')->getJob()."'";
-        $url = 'https://api.backendless.com/v1/data/Work?where='.$whereClause;
-        $response = \Httpful\Request::get($url)
-            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-            ->addHeader('application-type', 'REST')
-            ->addHeader('Content-Type', 'application/json')
-            ->addHeader('user-token', Session::get('user')->getUserToken())
-            ->send();
-        $workTab = json_decode($response, true);
-
+        $workTab = Api::getWorks(Session::get('user')->getJob(),  Session::get('user')->getUserToken());
         $count = count($workTab['data']);
         if(count(Session::get('user')->getWorks()) > 0){
         foreach(Session::get('user')->getWorks() as $work)
@@ -344,76 +212,53 @@ class Controller extends BaseController
             Session::get('user')->setLocation($geopoint);
         }
         $json = Session::get('user')->jsonSerialize();
-        $url = 'https://api.backendless.com/v1/data/users/'.Session::get('user')->getObjectId();
-        $response = \Httpful\Request::put($url)
-            ->sendsJson()
-            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-            ->addHeader('Content-Type', 'application/json')
-            ->addHeader('application-type', 'REST')
-            ->addHeader('user-token', Session::get('user')->getUserToken())
-            ->body($json)
-            ->send();
-        $array = json_decode($response, true);
+        $array = Api::editUser(Session::get('user')->getUserToken(),$json, Session::get('user')->getObjectId());
         $token = Session::get('user')->getUserToken();
         Session::get('user')->jsonDesializable($array);
         Session::get('user')->setUserToken($token);
-        /*$param = $request;
-        $resultworks=array();
-        foreach($param['work'] as $works=>$value)
-        {
-            list($value1,$value2) = explode('|', $value);
-            $element =
-                    array(
-                        'objectId'=>$value1,
-                        'job' => Session::get('user')->job,
-                        'name' => $value2,
-                        '___class' => 'Work',);
-
-            array_push($resultworks, $element);
-        }
-
-        Session::get('user')->setName($param['name']);
-        Session::get('user')->setWorks($resultworks);
-        Session::get('user')->setPhone($param['phone']);
-        Session::get('user')->setDescription($param['description']);
-        $params = array("address"=>$param['street'].' '.$param['number'].','.$param['zip'].' '.$param['country']);
-        $response = \Geocoder::geocode('json', $params);
-        $tab = json_decode($response, true);
-        if(($tab['status'] != 'ZERO_RESULTS')) {
-            $results = $tab['results'][0];
-            $geometry = $results['geometry'];
-            $location = $geometry['location'];
-            $geopoint = new \App\GeoPoint();
-            $geopoint->latitude = $location['lat'];
-            $geopoint->longitude = $location['lng'];
-            $geopoint->___class = 'GeoPoint';
-            Session::get('user')->setLocation($geopoint);
-        }
-
-        $test = json_encode(Session::get('user'));
-        $url = 'https://api.backendless.com/v1/data/users/'.Session::get('user')->getObjectId();
-        $response = \Httpful\Request::put($url)
-            ->sendsJson()
-            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
-            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
-            ->addHeader('Content-Type', 'application/json')
-            ->addHeader('application-type', 'REST')
-            ->addHeader('user-token', Session::get('user')->getUserToken())
-            ->body($test)
-            ->send();
-        $tab = json_decode($response, true);
-        log:info($response);
-        $user = new User();
-        $user->jsonDesializable($tab);
-        $user->userToken = Session::get('user')->userToken;
-        Session::forget('user');
-        Session::put('user', $user);*/
         return redirect()->route('home');
     }
     public function calendar()
     {
-        return \view('/calendar');
+
+        $workTab = Api::getWorks(Session::get('user')->getJob(),Session::get('user')->getUserToken());
+        log:info($workTab);
+
+        $tab = Api::getEvent(Session::get('user')->getUserToken());
+        $event = "";
+        foreach($tab['data'] as $value)
+        {
+            $y = gmdate("y", $value['scheduled']);
+            $y = '20'.$y;
+            $m = gmdate("m", $value['scheduled']);
+            $m = $m-1;
+            $d = gmdate("d", $value['scheduled']);
+            $h = gmdate("H", $value['scheduled']);
+            $i = gmdate("i", $value['scheduled']);
+            $tampon = "{
+        title: '".$value['title']."',
+                    objectId : '".$value['objectId']."',
+                    start: new Date(".$y.",".$m.",".$d.",".$h.",".$i.")
+                },";
+            $event = $event .' '.$tampon;
+        }
+        return \view('/calendar')->with(array("events" => $event, "works" => $workTab['data']));
+    }
+    public function adding(Request $request)
+    {
+        $param = $request;
+        $scheduled = $param['date'].' '.$param['time'];
+        $timestamp = strtotime($scheduled);
+        $event = new Event($param['work'], $timestamp);
+        $json = $event->serializeObject();
+        Api::add(Session::get('user')->getUserToken(), $json);
+       return redirect()->route('calendar');
+    }
+
+      public function delete($objectId)
+    {
+       Api::remove(Session::get('user')->getUserToken(), $objectId);
+        return redirect()->route('calendar');
     }
 
 }

@@ -1,90 +1,173 @@
 @extends('../template')
-@section('contenu')
+@section('css')
 
-<?php
-    $timestamp = mktime(0, 0, 0, date('m'), 1, date('Y'));
+    <link href="https://colorlib.com/polygon/gentelella/css/bootstrap.min.css" rel="stylesheet">
 
-// === Si le mois correspond au mois actuel et l'année aussi, on retient le jour actuel pour le griser plus tard (sinon le jour actuel ne se situe pas dans le mois)
-if(date('m', $timestamp) == date('m') && date('Y', $timestamp) == date('Y')) $coloreNum = date('d');
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://colorlib.com/polygon/gentelella/css/animate.min.css" rel="stylesheet">
 
-$m = array("01" => "Janvier", "02" => "Février", "03" => "Mars", "04" => "Avril", "05" => "Mai", "06" => "Juin", "07" => "Juillet", "08" => "Août", "09" => "Septembre", "10" => "Octobre",  "11" => "Novembre", "12" => "Décembre");
-$j = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
+    <!-- Custom styling plus plugins -->
+    <link href="https://colorlib.com/polygon/gentelella/css/custom.css" rel="stylesheet">
+    <link href="https://colorlib.com/polygon/gentelella/css/icheck/flat/green.css" rel="stylesheet">
 
-$numero_mois = date('m', $timestamp);
-$annee = date('Y', $timestamp);
+    <link href="assets/css/fullcalendar.css" rel="stylesheet">
+    <link href="assets/css/fullcalendar.print.css" rel="stylesheet" media="print">
 
-if($numero_mois == 12) {
-    $annee_avant = $annee;
-    $annee_apres = $annee + 1;
-    $mois_avant = $numero_mois - 1;
-    $mois_apres = 01;
-}
-elseif($numero_mois == 01) {
-    $annee_avant = $annee - 1;
-    $annee_apres = $annee;
-    $mois_avant = 12;
-    $mois_apres = $numero_mois + 1;
-}
-else {
-    $annee_avant = $annee;
-    $annee_apres = $annee;
-    $mois_avant = $numero_mois - 1;
-    $mois_apres = $numero_mois + 1;
-}
-
-// 0 => Dimanche, 1 => Lundi, 2 = > Mardi...
-$numero_jour1er = date('w', $timestamp);
-
-// Changement du numéro du jour car l'array commence à l'indice 0
-if ($numero_jour1er == 0) $numero_jour1er = 6; // Si c'est Dimanche, on le place en 6ème position (après samedi)
-else $numero_jour1er--; // Sinon on mets lundi à 0, Mardi à 1, Mercredi à 2...
-?>
-
-<table class="calendrier">
-    <caption><?php echo '<a href="?m='.$mois_avant.'&amp;y='.$annee_avant.'"><<</a>  '.$m[$numero_mois].' '.$annee.'  <a href="?m='.$mois_apres.'&amp;y='.$annee_apres.'">>></a>'; ?></caption>
-
-    <tr><th>Lu</th><th>Ma</th><th>Me</th><th>Je</th><th>Ve</th><th>Sa</th><th>Di</th></tr>
-    <?php
-    // Ecriture de la 1ère ligne
-    echo '<tr>';
-    // Ecriture de colones vides tant que le mois ne démarre pas
-    for($i = 0 ; $i < $numero_jour1er ; $i++) {		echo '<td></td>';	}
-    for($i = 1 ; $i <= 7 - $numero_jour1er; $i++) {
-        // Ce jour possède un événement
-        echo '<td ';
-
-        if(isset($coloreNum) && $coloreNum == $i) echo 'class="lienCalendrierJour"';
-
-        echo '>'.$i.'</td>';
-
-    }
-    echo '</tr>';
-
-    $nbLignes = ceil((date('t', $timestamp) - ($i-1))/ 7); // Calcul du nombre de lignes à afficher en fonction de la 1ère (surtout pour les mois a 31 jours)
-
-    for($ligne = 0 ; $ligne < $nbLignes ; $ligne++) {
-        echo '<tr>';
-        for($colone = 0 ; $colone < 7 ; $colone++) {
-            if($i <= date('t', $timestamp))	{
-                // Ce jour possède un événement
-
-                    echo '<td ';
-
-                    if(isset($coloreNum) && $coloreNum == $i) echo 'class="lienCalendrierJour"';
-
-                    echo '>'.$i.'</td>';
-
-            } else {
-                echo '<td></td>';
-            }
-            $i = $i +1;
-        }
-        echo '</tr>';
-    }
-    ?>
-</table>
-
-<br/>
+    <script src="https://colorlib.com/polygon/gentelella/js/jquery.min.js"></script>
+    @endsection
 
 
-@endsection
+    @section('contenu')
+            <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>
+                       Votre calendrier
+                    </h3>
+                </div>
+
+
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Vos travaux prevus</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+
+                            <div id='calendar'></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Ajout d&#8216;un &#233;venement</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#">Settings 1</a>
+                                        </li>
+                                        <li><a href="#">Settings 2</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+
+                            <form class="form-horizontal form-label-left" novalidate  method="post" action="{{ route('adding') }}" >
+
+
+                                <span class="section">Informations</span>
+
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Titre :  <span class="required">*</span>
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select class="form-control" id="exampleSelect1" name="work">
+                                            @foreach($works as $work)
+                                            <option>{{$work['name']}}</option>
+                                                @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Date a prevoir :<span class="required">*</span>
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="date" id="date" name="date" required="required" value="<?php echo date('Y-m-d'); ?>" class="form-control col-md-7 col-xs-12">
+                                    </div>
+                                </div>
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Heure :<span class="required">*</span>
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="time" id="time" name="time" value="<?php echo date('h:m'); ?>" required="required" class="form-control col-md-7 col-xs-12">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="_token" value="{!! csrf_token() !!}">
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-md-6 col-md-offset-3">
+                                        <button id="send" type="submit" class="btn btn-success">Ajouter</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /page content -->
+
+    <div id="fc_create" data-toggle="modal" data-target="#CalenderModalNew"></div>
+    <div id="fc_edit" data-toggle="modal" data-target="#CalenderModalEdit"></div>
+
+    <!-- End Calendar modal -->
+    <!-- /page content -->
+    </div>
+
+    </div>
+
+    <div id="custom_notifications" class="custom-notifications dsp_none">
+        <ul class="list-unstyled notifications clearfix" data-tabbed_notifications="notif-group">
+        </ul>
+        <div class="clearfix"></div>
+        <div id="notif-group" class="tabbed_notifications"></div>
+    </div>
+
+    <script src="https://colorlib.com/polygon/gentelella/js/bootstrap.min.js"></script>
+
+    <script src="https://colorlib.com/polygon/gentelella/js/nprogress.js"></script>
+
+    <!-- bootstrap progress js -->
+    <script src="https://colorlib.com/polygon/gentelella/js/progressbar/bootstrap-progressbar.min.js"></script>
+
+    <!-- icheck -->
+    <script src="https://colorlib.com/polygon/gentelella/js/icheck/icheck.min.js"></script>
+
+    <script src="https://colorlib.com/polygon/gentelella/js/custom.js"></script>
+
+    <script src="https://colorlib.com/polygon/gentelella/js/moment/moment.min.js"></script>
+    <script src="assets/js/fullcalendar.js"></script>
+    <!-- pace -->
+    <script src="https://colorlib.com/polygon/gentelella/js/pace/pace.min.js"></script>
+    <script>
+        $(window).load(function() {
+
+            var calendar = $('#calendar').fullCalendar({
+
+                editable: true,
+                events: [<?php echo $events?>]
+            });
+        });
+    </script>
+            @endsection
+
+
