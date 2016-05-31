@@ -93,8 +93,11 @@ class Controller extends BaseController
     }
     public function dashboard()
     {
-       $array= Api::getWeather(Session::get('user')->getLocation()['latitude'],Session::get('user')->getLocation()['longitude']);
-        return \view('/dashboard', array('weather' => $array));
+        $weatherArray= Api::getWeather(Session::get('user')->getLocation()['latitude'],Session::get('user')->getLocation()['longitude']);
+        $commentArray = Api::getComment(Session::get('user')->getUserToken(), Session::get('user')->getObjectId());
+        $eventArray = Api::getEvent(Session::get('user')->getUserToken());
+        $commentArray = array_slice($commentArray, 0, 4);
+        return \view('/dashboard', array('weather' => $weatherArray, 'comments' => $commentArray, 'events' =>$eventArray['data']));
     }
     public function registration(Request $request)
     {

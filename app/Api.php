@@ -173,6 +173,20 @@ class Api extends Model
         $workTab = json_decode($response, true);
         return $workTab;
     }
+    public static function getComment($token, $professional)
+    {
+        $whereClause ="professional='".$professional."'";
+        $url = 'https://api.backendless.com/v1/data/Comment?where='.$whereClause;
+        $response = \Httpful\Request::get($url)
+            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+            ->addHeader('application-type', 'REST')
+            ->addHeader('Content-Type', 'application/json')
+            ->addHeader('user-token',$token)
+            ->send();
+        $commentTab = json_decode($response, true);
+       return $commentTab['data'];
+    }
 
 
 }
