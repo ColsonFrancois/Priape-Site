@@ -1,6 +1,8 @@
 @extends('../template')
 @section('contenu')
 
+
+
     <section class="module-sm">
         <div class="container-fluid container-custom">
 

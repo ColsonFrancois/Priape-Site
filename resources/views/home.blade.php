@@ -19,24 +19,22 @@
     <link href="assets/css/custom.css" rel="stylesheet">
 </head>
 
+@if(Session::has('message'))
 
-@if(isset($error))
-    @if($error == 'null')
-        <script src="assets/js/jquery-2.1.4.min.js"></script>
-        <link href="assets/css/toastr.css" rel="stylesheet"/>
-        <script src="assets/js/toastr.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                toastr.options.timeOut = 10000;
-                toastr.warning('Votre entreprise n\'est pas visible. Rendez-vous dans votre profil pour modifier vos travaux');
-                $('#linkButton').click(function() {
-                    toastr.success('Click Button');
-                });
-            });
-        </script>
-        @endif
-    @endif
-
+    <script src="assets/js/jquery.min.js"></script>
+    <link href="assets/css/toastr.css" rel="stylesheet"/>
+    <script src="assets/js/toastr.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            toastr.options.timeOut = 10000;
+            toastr.success('Inscription correctement effectuee, vous pouvez desormais vous connecter');
+            $('#linkButton').click(function() {
+                        toastr.success('Click Button');
+                    });
+        });
+    </script>
+    {{ Session::forget('message')}}
+@endif
 
 <body style="background:#F7F7F7;">
 <div class="">

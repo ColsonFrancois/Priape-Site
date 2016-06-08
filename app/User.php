@@ -49,10 +49,12 @@ class User extends Model
         {
             $this->__meta = $tab['__meta'];
         }
-        if(sizeof($tab['works']) < 0)
+        if(sizeof($tab['works']) <= 0)
         {
             $this->works = null;
         }
+        else{$this->works = $tab['works'];
+     }
         if(array_key_exists('password', $tab))
         {
             $this->password = $tab['password'];
@@ -64,15 +66,18 @@ class User extends Model
 
     public function jsonSerialize()
     {
+        $tosave = null;
+
         $data = array("objectId" => $this->objectId, "name"=>$this->name, "email" => $this->email,"job" => $this->job,"location" => $this->location,"picture" => $this->picture,"professional" => $this->professional,
-            "phone" => $this->phone, "works"=>$this->works, "description" => $this->description, "__meta"=> $this->__meta, "password" => $this->password);
+            "phone" => $this->phone, "works"=>$this->works, "description" => $this->description, "__meta"=> $this->__meta);
         $json =  json_encode($data, true);
+        log:info('user JSON '.$json);
         return $json;
     }
     public function jsonToRegister()
     {
         $data = array( "name"=>$this->name, "email" => $this->email,"job" => $this->job,"location" => $this->location,"picture" => $this->picture,"professional" => $this->professional,
-            "phone" => $this->phone, "works"=>$this->works, "description" => $this->description, "__meta"=> $this->__meta, "password" => $this->password);
+            "phone" => $this->phone, "description" => $this->description, "__meta"=> $this->__meta, "password" => $this->password);
         $json =  json_encode($data, true);
         return $json;
     }

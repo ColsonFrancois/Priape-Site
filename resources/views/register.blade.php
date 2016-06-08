@@ -23,6 +23,25 @@
 </head>
 
 <body style="background:#F7F7F7;">
+
+
+@if(Session::has('message'))
+
+    <script src="assets/js/jquery.min.js"></script>
+    <link href="assets/css/toastr.css" rel="stylesheet"/>
+    <script src="assets/js/toastr.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            toastr.options.timeOut = 10000;
+            toastr.error('Votre adresse est invalide');
+            $('#linkButton').click(function() {
+                toastr.success('Click Button');
+            });
+        });
+    </script>
+    {{ Session::forget('message')}}
+@endif
+
 <div class="">
     <a class="hiddenanchor" id="toregister"></a>
     <a class="hiddenanchor" id="tologin"></a>

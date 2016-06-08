@@ -36,6 +36,7 @@ class Api extends Model
             ->addHeader('Content-Type', 'application/json')
             ->addHeader('user-token', $token)
             ->send();
+        log:info($response);
 
         return json_decode($response, true);
     }
@@ -50,7 +51,6 @@ class Api extends Model
                 ->addHeader('application-type', 'REST')
                 ->addHeader('user-token', $token)
                 ->send();
-            log:info($response);
 
 
     }
@@ -61,8 +61,6 @@ class Api extends Model
         $response = \Httpful\Request::get($uri)
             ->send();
         $tab = json_decode($response, true);
-        log:
-        info($tab);
         $array = array();
         $i = 0;
         foreach ($tab["list"] as $value) {
@@ -105,6 +103,7 @@ class Api extends Model
             ->addHeader('application-type', 'REST')
             ->body($user)
             ->send();
+        log:info($response);
     }
 
     public static function add($token, $object)
@@ -134,6 +133,7 @@ class Api extends Model
     public static function getEvent($token)
     {
         $url = 'https://api.backendless.com/v1/data/Event';
+
         $response = \Httpful\Request::get($url)
             ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
             ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
@@ -148,7 +148,8 @@ class Api extends Model
 
     public static function editUser($token, $object, $objectId)
     {
-        $url = 'https://api.backendless.com/v1/data/users/'.Session::get('user')->getObjectId();
+
+        $url = 'https://api.backendless.com/v1/users/'.$objectId;
         $response = \Httpful\Request::put($url)
             ->sendsJson()
             ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
@@ -158,6 +159,9 @@ class Api extends Model
             ->addHeader('user-token', $token)
             ->body($object)
             ->send();
+        $resp = json_decode($response, true);
+        log:info('la reponse  '.$response);
+        return $resp;
     }
     public static function getWorks($job, $token)
     {

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Gentallela Alela! | </title>
+    <title>Priape</title>
 
     @yield('css')
 
@@ -25,6 +25,17 @@
                     <a href="{{route('dashboard')}}" class="site_title" ><img src="assets/images/logo.png" height="50" width="125" alt="..."/></a>
                 </div>
 
+                <!-- Mobile-->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    </div>
                 <div class="clearfix"></div>
 
                 <!-- menu profile quick info -->
@@ -37,7 +48,7 @@
                         } ?>" alt="..." class="img-circle profile_img">
                     </div>
                     <div class="profile_info">
-                        <span>Welcome,</span>
+                        <span>Bienvenue,</span>
                         <h2>{{Session::get('user')->getName()}}</h2>
                     </div>
                 </div>
@@ -53,7 +64,7 @@
                             <li><a href="{{route('dashboard')}}"><i class="fa fa-eye" aria-hidden="true"></i> Acceuil <span class="fa fa-chevron-right"></span></a>
 
                             </li>
-                            <li><a><i class="fa fa-edit"></i> Profil <span class="fa fa-chevron-right"></span></a>
+                            <li><a href="{{route('profil')}}"><i class="fa fa-edit"></i> Profil <span class="fa fa-chevron-right"></span></a>
 
                             </li>
                             <li><a href="{{route('calendar')}}"><i class="fa fa-table"></i> Calendrier <span class="fa fa-chevron-right"></span></a>
@@ -79,7 +90,7 @@
 <!-- footer content -->
 <footer>
     <div class="pull-right">
-        Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+       WebMaster & Designer :<a href="https://www.facebook.com/francois.colson">COLSON Francois</a>
     </div>
     <div class="clearfix"></div>
 </footer>

@@ -16,6 +16,7 @@
 @section('contenu')
 
 
+    @if(count(Session::get('user')->getWorks()) <= 0)
 
             <script src="assets/js/jquery.min.js"></script>
             <link href="assets/css/toastr.css" rel="stylesheet"/>
@@ -29,6 +30,8 @@
                     });
                 });
             </script>
+@endif
+
 
 
 
@@ -75,7 +78,7 @@
 
                                         </h2>
                                         <div class="byline">
-                                            <span>Post&eacute; le : {{date('d/m/y', substr($comment['created'],0, -3))}}</span> par {{$comment['name']}}
+                                            <span>Post&eacute;&eacute; le : {{date('d/m/y', substr($comment['created'],0, -3))}}</span> par {{$comment['name']}}
                                         </div>
                                         <p class="excerpt">{{$comment['message']}}&nbsp;&nbsp;<a>Signaler</a>
                                         </p>
@@ -100,17 +103,6 @@
                             <h2>A faire <small>programme du jour</small></h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a class="close-link"><i class="fa fa-close"></i></a>
                                 </li>
                             </ul>
                             <div class="clearfix"></div>
@@ -137,12 +129,9 @@
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Meteo<small>temperature annoncees</small></h2>
+                            <h2>Meteo<small>temperature annonc&eacute;es</small></h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-
-                                <li><a class="close-link"><i class="fa fa-close"></i></a>
                                 </li>
                             </ul>
                             <div class="clearfix"></div>
@@ -189,6 +178,7 @@
                                 <div class="col-sm-8">
                                     <div class="weather-text">
                                         <h2>{{$weather[0]['city']}}<br></h2>
+                                        <span>Belgique</span>
                                     </div>
                                 </div>
                             </div>
@@ -202,6 +192,9 @@
 
                             <div class="row weather-days">
                                 @foreach($weather as $weath)
+                                    @if($weather[0]['day'] == $weath['day'])
+
+                                @else
                                 <div class="col-sm-2">
                                     <div class="daily-weather">
                                         <h2 class="day"><?php
@@ -234,6 +227,7 @@
                                         <img style="margin-left: 0.2cm" height="32" width="32" src="<?php echo 'assets/images/meteo/'.$weath['icon'].'.png' ?>"/>
                                     </div>
                                 </div>
+                                    @endif
                                 @endforeach
                                 <div class="clearfix"></div>
                             </div>
@@ -243,114 +237,41 @@
                 </div>
                 <!-- end of weather widget -->
 
-                <div class="col-md-4 col-sm-4 col-xs-12">
-                    <div class="x_panel tile fixed_height_320">
+                <div class="col-md-12 col-sm-6 col-xs-12">
+                    <div class="x_panel">
                         <div class="x_title">
-                            <h2>App Versions</h2>
+                            <h2>Statistiques<small>Travaux les plus r&eacute;alis&eacute;s</small></h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a class="close-link"><i class="fa fa-close"></i></a>
                                 </li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <h4>App Usage across versions aaaaaaaaaaaaaaa</h4>
+                            @foreach($percents as $percent)
                             <div class="widget_summary">
                                 <div class="w_left w_25">
-                                    <span>0.1.5.2</span>
+                                    <span>{{$percent['name']}}</span>
                                 </div>
                                 <div class="w_center w_55">
                                     <div class="progress">
-                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 66%;">
-                                            <span class="sr-only">60% Complete</span>
+                                        <div class="progress-bar bg-green" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $percent['percent'].'%'; ?>;">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="w_right w_20">
-                                    <span>123k</span>
+                                    <span>{{$percent['percent']}} %</span>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
+                                @endforeach
 
-                            <div class="widget_summary">
-                                <div class="w_left w_25">
-                                    <span>0.1.5.3</span>
-                                </div>
-                                <div class="w_center w_55">
-                                    <div class="progress">
-                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w_right w_20">
-                                    <span>53k</span>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="widget_summary">
-                                <div class="w_left w_25">
-                                    <span>0.1.5.4</span>
-                                </div>
-                                <div class="w_center w_55">
-                                    <div class="progress">
-                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w_right w_20">
-                                    <span>23k</span>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="widget_summary">
-                                <div class="w_left w_25">
-                                    <span>0.1.5.5</span>
-                                </div>
-                                <div class="w_center w_55">
-                                    <div class="progress">
-                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 5%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w_right w_20">
-                                    <span>3k</span>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="widget_summary">
-                                <div class="w_left w_25">
-                                    <span>0.1.5.6</span>
-                                </div>
-                                <div class="w_center w_55">
-                                    <div class="progress">
-                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w_right w_20">
-                                    <span>1k</span>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
+
 
                         </div>
                     </div>
                 </div>
+
 
             </div>
         </div>

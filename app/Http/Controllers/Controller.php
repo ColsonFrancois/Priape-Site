@@ -16,16 +16,13 @@ use Illuminate\Foundation\Auth\Access\AuthorizesResources;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-use Log;
 use Symfony\Component\HttpFoundation\Request;
 use backendless\Backendless;
 use backendless\model\BackendlessUser;
 use Illuminate\Support\Facades\Auth;
 
-
-include "D:/Logiciel/wamp/www/Priape-site/vendor/backendless/autoload.php";
 include "D:/Logiciel/wamp/www/Priape-site/vendor/httpful.phar";
-Backendless::initApp('603EA250-3BD9-5EB1-FF62-53D50AC37900', '34C1A9A1-E8C3-AFFF-FF39-5C460D6DB200', 'v1');
+
 
 
 
@@ -46,7 +43,6 @@ class Controller extends BaseController
     public function contact()
     {
         $user = Backendless::$UserService->getCurrentUser();
-        Log::info($user->name);
 
     }
     public function register()
@@ -66,7 +62,8 @@ class Controller extends BaseController
         }
         return \view('/login');
     }
-    public function authentification( Request $request)
+    public function
+    authentification( Request $request)
     {
         $param = $request;
         $tab =  Api::login($param['email'], $param['password']);
@@ -75,6 +72,7 @@ class Controller extends BaseController
         $user->jsonDesializable($array['data'][0]);
         $user->setUserToken($tab['user-token']);
         Session::put('user', $user);
+        log:info($user->getWorks());
         if($user->getProfessional() == false)
         {
             return redirect()->route('logout');
@@ -97,7 +95,28 @@ class Controller extends BaseController
         $commentArray = Api::getComment(Session::get('user')->getUserToken(), Session::get('user')->getObjectId());
         $eventArray = Api::getEvent(Session::get('user')->getUserToken());
         $commentArray = array_slice($commentArray, 0, 4);
-        return \view('/dashboard', array('weather' => $weatherArray, 'comments' => $commentArray, 'events' =>$eventArray['data']));
+        $eventlist = array();
+        $somme = 0;
+        foreach ($eventArray['data'] as $event) {
+            if($event['scheduled'] < time()){
+            $element = $event['title'];
+            array_push($eventlist, $element);
+                $somme++;
+            }
+        }
+        $test = array_count_values($eventlist);
+        $key = array_keys($test);
+        $percentTab = array();
+        for($i=0; $i<count($key); $i++)
+        {
+            /*log:info($key[$i].' '.$test[$key[$i]]);*/
+            $percent = ($test[$key[$i]]*100)/$somme;
+            $percent= round($percent);
+            $element = array('name' => $key[$i], 'percent'=> $percent);
+            array_push($percentTab, $element);
+        }
+        log:info($percentTab);
+        return \view('/dashboard', array('weather' => $weatherArray, 'comments' => $commentArray, 'events' =>$eventArray['data'], 'percents' => $percentTab));
     }
     public function registration(Request $request)
     {
@@ -137,8 +156,15 @@ class Controller extends BaseController
 
                 $json = $user->jsonToRegister();
                 Api::register($json);
-                return redirect()->route('home', array("error" => "null"));
-        }}
+                /*return \view('/home',  array('message' => $result));*/
+                Session::put('message', 'Incription correctement effectuée vous pouvez désormais vous connecter');
+                return redirect(route('home'));
+
+        }else{
+                Session::put('message', 'Incription correctement effectuée vous pouvez désormais vous connecter');
+                return Redirect::back();
+            }
+        }
     }
     public function profil()
     {
@@ -148,7 +174,6 @@ class Controller extends BaseController
         $param = array("latlng" => $tab[0]['latitude'].",".$tab[0]['longitude']);
         $response = \Geocoder::geocode('json', $param);
         $tableau = json_decode($response, true);
-        log:info($tableau);
 
         /*Get all works do by his job*/
         $workTab = Api::getWorks(Session::get('user')->getJob(),  Session::get('user')->getUserToken());
@@ -159,19 +184,16 @@ class Controller extends BaseController
             for($i = 0; $i < $count; $i++){
                 if($work['name'] === $workTab['data'][$i]['name'])
                 {
-
                     $workTab['data'][$i]['checked'] = true;
 
                 }
-
             }
         }
         }
-
         return \view('/profil', array(
             'street' => $tableau['results'][0]['address_components'][1]['long_name'],
             'number' => $tableau['results'][0]['address_components'][0]['long_name'],
-            'zip' => $tableau['results'][0]['address_components'][6]['long_name'],
+            'city' => $tableau['results'][0]['address_components'][2]['long_name'],
             'works' => $workTab['data']
         ));
     }
@@ -180,6 +202,7 @@ class Controller extends BaseController
 
         $param = $request;
         $resultworks= array();
+
         if(sizeof($param['work'])>0){
         foreach($param['work'] as $works=>$value)
         {
@@ -194,14 +217,13 @@ class Controller extends BaseController
 
             array_push($resultworks, $element);
         }
+
         }
-        log:info($resultworks);
-        Session::get('user')->setworks($resultworks);
         Session::get('user')->setName($param['name']);
         Session::get('user')->setWorks($resultworks);
         Session::get('user')->setPhone($param['phone']);
         Session::get('user')->setDescription($param['description']);
-        $params = array("address"=>$param['street'].' '.$param['number'].','.$param['zip'].' '.$param['country']);
+        $params = array("address"=>$param['street'].' '.$param['number'].','.$param['street'].' '.$param['country']);
         $response = \Geocoder::geocode('json', $params);
         $tab = json_decode($response, true);
         if(($tab['status'] != 'ZERO_RESULTS')) {
@@ -215,6 +237,7 @@ class Controller extends BaseController
             Session::get('user')->setLocation($geopoint);
         }
         $json = Session::get('user')->jsonSerialize();
+        log:info('json to save'. $json);
         $array = Api::editUser(Session::get('user')->getUserToken(),$json, Session::get('user')->getObjectId());
         $token = Session::get('user')->getUserToken();
         Session::get('user')->jsonDesializable($array);
@@ -225,8 +248,6 @@ class Controller extends BaseController
     {
 
         $workTab = Api::getWorks(Session::get('user')->getJob(),Session::get('user')->getUserToken());
-        log:info($workTab);
-
         $tab = Api::getEvent(Session::get('user')->getUserToken());
         $event = "";
         foreach($tab['data'] as $value)
