@@ -38,10 +38,6 @@
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Vos travaux prevus</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                            </ul>
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
@@ -60,11 +56,6 @@
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Ajout d&#8216;un &#233;venement</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                           
-                            </ul>
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
@@ -96,7 +87,9 @@
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Heure :<span class="required">*</span>
                                     </label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <input type="time" id="time" name="time" value="<?php echo date('h:m'); ?>" required="required" class="form-control col-md-7 col-xs-12">
+                                        <input type="time" id="time" name="time" value="<?php date_default_timezone_get('Europe/Berlin');
+                                        echo date('H:i', time()+7200);
+                                        ?>" required="required" class="form-control col-md-7 col-xs-12">
                                     </div>
                                 </div>
                                 <input type="hidden" name="_token" value="{!! csrf_token() !!}">
@@ -146,8 +139,7 @@
 
     <script src="https://colorlib.com/polygon/gentelella/js/moment/moment.min.js"></script>
     <script src="assets/js/fullcalendar.js"></script>
-    <!-- pace -->
-    <script src="https://colorlib.com/polygon/gentelella/js/pace/pace.min.js"></script>
+
     <script>
         $(window).load(function() {
 

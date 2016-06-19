@@ -63,6 +63,7 @@ class Api extends Model
         $tab = json_decode($response, true);
         $array = array();
         $i = 0;
+        log:info('temperature'. $response);
         foreach ($tab["list"] as $value) {
 
             $tamp['city'] = $tab['city']['name'];
@@ -118,6 +119,7 @@ class Api extends Model
             ->addHeader('user-token', $token)
             ->body($object)
             ->send();
+        log:info($response);
     }
 
     public static function remove($token, $objectId)
@@ -132,7 +134,7 @@ class Api extends Model
     }
     public static function getEvent($token)
     {
-        $url = 'https://api.backendless.com/v1/data/Event';
+        $url = 'https://api.backendless.com/v1/data/Event?sortBy=scheduled';
 
         $response = \Httpful\Request::get($url)
             ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
@@ -141,8 +143,9 @@ class Api extends Model
             ->addHeader('application-type', 'REST')
             ->addHeader('user-token', $token)
             ->send();
-
+        log:info($response);
         $tab = json_decode($response, true);
+
         return $tab;
     }
 
@@ -190,6 +193,38 @@ class Api extends Model
             ->send();
         $commentTab = json_decode($response, true);
        return $commentTab['data'];
+    }
+    public static function propose($token, $message, $title)
+    {
+        $data1 = array("textmessage" => $message, "htmlmessage"=> null);
+        $data = array("subject" => $title, "bodyparts"=> $data1, "to" => array("colsonfrancois@yahoo.be"), "attachment" => null);
+        $data = json_encode($data, true);
+
+        $url = 'https://api.backendless.com/v1/messaging/email';
+        $response = \Httpful\Request::post($url)
+            ->sendsJson()
+            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+            ->addHeader('Content-Type', 'application/json')
+            ->addHeader('application-type', 'REST')
+            ->addHeader('user-token', $token)
+            ->body($data)
+            ->send();
+            $tab = json_decode($response, true);
+
+        return $tab;
+    }
+    public static function deleteUser($token, $objectId)
+    {
+        $url = 'https://api.backendless.com/v1/data/Users/'.$objectId;
+        $response = \Httpful\Request::delete($url)
+            ->addHeader('application-id', '603EA250-3BD9-5EB1-FF62-53D50AC37900')
+            ->addHeader('secret-key', '0E72338A-D313-ED73-FF03-E7DD53D51D00')
+            ->addHeader('application-type', 'REST')
+            ->addHeader('user-token', $token)
+            ->send();
+        log:info($response);
+        return $response;
     }
 
 

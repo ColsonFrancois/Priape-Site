@@ -58,3 +58,13 @@ Route::get('/delete/{objectId}', [
     'as' => 'deleleteEvent',
     'uses' => 'Controller@delete'
 ]);
+
+Route::post('/propose', ['as' => 'propose',
+    'uses' => 'Controller@propose'
+]);
+Route::post('/report', ['as' => 'report',
+    'uses' => 'Controller@report'
+]);
+Route::get('/deleteUser', ['as' => 'deleteUser',
+    'uses' => 'Controller@deleteUser'
+]);

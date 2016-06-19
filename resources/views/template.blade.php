@@ -8,7 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Priape</title>
-
+    <link href="assets/css/popup.css" rel="stylesheet">
+    <script src="assets/js/myjs.js"></script>
     @yield('css')
 
 
@@ -41,7 +42,7 @@
                 <!-- menu profile quick info -->
                 <div class="profile">
                     <div class="profile_pic">
-                        <img src="<?php if(Session::get('user')->getPicture() != null){
+                        <img height="55" width="55" src="<?php if(Session::get('user')->getPicture() != null){
                             echo Session::get('user')->getPicture();
                         }else{
                             echo 'assets/images/user.png';
@@ -76,10 +77,39 @@
                     </div>
                 </div>
                 <!-- /sidebar menu -->
-
+                <!-- /menu footer buttons -->
+                <div class="sidebar-footer hidden-small">
+                    <a data-toggle="tooltip" data-placement="top" title="Settings" onclick="div_show()">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    </a>
+                        <a>
+                        <span class="glyphicon"></span>
+                    </a>
+                    <a>
+                        <span class="glyphicon" ></span>
+                    </a>
+                    <a>
+                        <span class="glyphicon"></span>
+                    </a>
+                </div>
+                <!-- /menu footer buttons -->
             </div>
         </div>
-
+        <div id="abc">
+            <!-- Popup Div Starts Here -->
+            <div id="popupContact" style="width: 15cm">
+                <!-- Contact Us Form -->
+                <form id="form" method="get" name="form" action="{{ route('deleteUser') }}">
+                    <img id="close" src="assets/images/close.png" onclick ="div_hide()" height="50" width="50">
+                    <h2 style="margin-left: 0.5cm; margin-top: 0.5cm">Etes-vous sur de vouloir supprimer votre compte ?</h2>
+                    <hr style="margin-left: 0.5cm; margin-right: 0.5cm" >
+                    <p style="margin: 0.3cm;">Toutes vos informations seront supprim&eacute;es et vous n&rsquo;aurez plus aucun acc&egrave;s &agrave; votre compte.</p>
+                    <input type="hidden" name="_token" value="{!! csrf_token() !!}">
+                    <input style="margin-top: 0.5cm" type="submit" name="submit" id="submit" value="Valider" class="btn btn-dark btn-lg pull-left">
+                </form>
+            </div>
+            <!-- Popup Div Ends Here -->
+        </div>
 
 @yield('contenu')
 

@@ -66,6 +66,9 @@
                     <div>
                         <input type="number" class="form-control" name="phone"  placeholder="Numero de telephone" required>
                     </div>
+                    <div>
+                        <input style="margin-top: 0.3cm" type="file" placeholder="Choissisez une image de profil" name="fileToUpload" id="fileToUpload">
+                    </div>
                     <h5 class="pull-left">Votre emploie : </h5>
                     <div>
                         <div class="form-group">

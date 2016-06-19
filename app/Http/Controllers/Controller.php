@@ -91,6 +91,7 @@ class Controller extends BaseController
     }
     public function dashboard()
     {
+        if(Session::has('user')){
         $weatherArray= Api::getWeather(Session::get('user')->getLocation()['latitude'],Session::get('user')->getLocation()['longitude']);
         $commentArray = Api::getComment(Session::get('user')->getUserToken(), Session::get('user')->getObjectId());
         $eventArray = Api::getEvent(Session::get('user')->getUserToken());
@@ -115,8 +116,11 @@ class Controller extends BaseController
             $element = array('name' => $key[$i], 'percent'=> $percent);
             array_push($percentTab, $element);
         }
-        log:info($percentTab);
         return \view('/dashboard', array('weather' => $weatherArray, 'comments' => $commentArray, 'events' =>$eventArray['data'], 'percents' => $percentTab));
+        }
+        else{
+            return redirect()->route('home');
+        }
     }
     public function registration(Request $request)
     {
@@ -134,6 +138,7 @@ class Controller extends BaseController
 
             if(($tab['status'] != 'ZERO_RESULTS'))
             {
+                $picture = "http://www.arbres.org/images/arbre-petition.jpg";
                 $results = $tab['results'][0];
                 $geometry = $results['geometry'];
                 $location = $geometry['location'];
@@ -223,7 +228,7 @@ class Controller extends BaseController
         Session::get('user')->setWorks($resultworks);
         Session::get('user')->setPhone($param['phone']);
         Session::get('user')->setDescription($param['description']);
-        $params = array("address"=>$param['street'].' '.$param['number'].','.$param['street'].' '.$param['country']);
+        $params = array("address"=>$param['street'].' '.$param['number'].','.$param['city'].' '.$param['country']);
         $response = \Geocoder::geocode('json', $params);
         $tab = json_decode($response, true);
         if(($tab['status'] != 'ZERO_RESULTS')) {
@@ -242,7 +247,7 @@ class Controller extends BaseController
         $token = Session::get('user')->getUserToken();
         Session::get('user')->jsonDesializable($array);
         Session::get('user')->setUserToken($token);
-        return redirect()->route('home');
+        return redirect()->route('profil');
     }
     public function calendar()
     {
@@ -257,8 +262,9 @@ class Controller extends BaseController
             $m = gmdate("m", $value['scheduled']);
             $m = $m-1;
             $d = gmdate("d", $value['scheduled']);
-            $h = gmdate("H", $value['scheduled']);
+            $h = gmdate("H", $value['scheduled']+7200);
             $i = gmdate("i", $value['scheduled']);
+            log:info($value['scheduled']);
             $tampon = "{
         title: '".$value['title']."',
                     objectId : '".$value['objectId']."',
@@ -273,7 +279,8 @@ class Controller extends BaseController
         $param = $request;
         $scheduled = $param['date'].' '.$param['time'];
         $timestamp = strtotime($scheduled);
-        $event = new Event($param['work'], $timestamp);
+        log:info('in');
+        $event = new Event($param['work'], $timestamp-7200);
         $json = $event->serializeObject();
         Api::add(Session::get('user')->getUserToken(), $json);
        return redirect()->route('calendar');
@@ -283,6 +290,35 @@ class Controller extends BaseController
     {
        Api::remove(Session::get('user')->getUserToken(), $objectId);
         return redirect()->route('calendar');
+    }
+
+    public function propose(Request $request)
+    {
+        $param = $request;
+        $message = Session::get('user')->getName()." propose le travaille suivant : ".$param['work']." pour les ".Session::get('user')->getJob();
+        $json = Api::propose(Session::get('user')->getUserToken(), $message, "Proposition de travail");
+
+            Session::put('message', array("error"=>false, "message"=> "Votre travail a été proposé"));
+
+        return redirect()->route('profil');
+    }
+    public function report(Request $request)
+    {
+
+        $param = $request;
+        $message = Session::get('user')->getName()." reporte le commentaire suivant : ".Session::get('comment')."pour la raison suivante : ".$param["report"];
+        $json = Api::propose(Session::get('user')->getUserToken(), $message, "report");
+
+        Session::put('message', array("error"=>false, "message"=> "Votre requête a été prise en compte"));
+
+        return redirect()->route('dashboard');
+
+    }
+    public function deleteUser()
+    {
+        Api::deleteUser(Session::get('user')->getUserToken(), Session::get('user')->getObjectId());
+        Session::forget('user');
+        return redirect()->route('home');
     }
 
 }

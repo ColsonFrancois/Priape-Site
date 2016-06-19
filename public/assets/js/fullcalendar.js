@@ -1904,7 +1904,7 @@
             var r = confirm("êtes-vous sur de vouloir supprimer cet événement ?");
             if(r == true)
             {
-                var url = "http://localhost:8080/delete/";
+                var url = "/delete/";
                 window.location.replace(url.concat(a.event.objectId));
             }
 
@@ -3288,7 +3288,7 @@
         header: {
             left: "title",
             center: "",
-            right: "today prev,next"
+            right: "prev,next"
         },
         weekends: !0,
         weekNumbers: !1,
@@ -3307,7 +3307,6 @@
             prevYear: "prev year",
             nextYear: "next year",
             year: "year",
-            today: "today",
             month: "month",
             week: "week",
             day: "day"

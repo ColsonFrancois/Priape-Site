@@ -1,0 +1,53 @@
+@import "http://fonts.googleapis.com/css?family=Raleway";
+/*----------------------------------------------
+CSS settings for HTML div Exact Center
+------------------------------------------------*/
+#abc {
+    width:100%;
+    height:100%;
+    opacity:.95;
+    top:0;
+    left:0;
+    display:none;
+    position:fixed;
+    background-color:#313131;
+    overflow:auto
+}
+img#close {
+    position:absolute;
+    right:-14px;
+    top:-14px;
+    cursor:pointer
+
+}
+#popupContact {
+    border-radius: 5px;
+    background-color: white;
+    position:absolute;
+    left:50%;
+    top:17%;
+    margin-left:-202px;
+    font-family:'Raleway',sans-serif
+}
+
+
+#submit {
+    text-decoration:none;
+    width: 50%;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    text-align:center;
+    display:block;
+    background-color:#1abb9c;
+    color:#fff;
+    border:1px solid #1abb9c;
+    padding:10px 0;
+    font-size:20px;
+    cursor:pointer;
+    border-radius:5px
+}
+#work{
+    width: 95%;
+    margin-left: 10px;
+
+}
